@@ -1,0 +1,28 @@
+'use strict';
+
+const assert = require('assert');
+
+module.exports.setup = function(server, proxy) {
+
+  /**
+   * @swagger
+   * {{ routeUrl }}:
+   *   {{ method }}:
+   *   description: {{ swaggerConfig.description }}
+   *   produces:
+   *    - {{ swaggerConfig.produces }}
+   *   parameters:
+   *   {{#each swaggerConfig.parameters}} - name: {{ name }}
+   *   {{#each props}}{{#pairs .}}   {{key}}: {{value}}{{/pairs}}
+   *   {{/each}}
+   *   {{/each}}
+   *   responses:
+   *   {{#each swaggerConfig.responses}}    {{ status }}: {{ description }}
+   *   {{/each}}
+   */
+  server.{{ method }}('{{ nonProxyPath }}{{ routeUrl }}', (req, res, next) => {
+    assert(false, 'Implement this');
+    return next();
+  });
+
+}
