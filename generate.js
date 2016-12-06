@@ -27,6 +27,7 @@ const testPath                            = path.join(__dirname, 'templates', 't
 const serverPath                          = path.join(__dirname, 'templates', 'server.template.hbs');
 const routesPath                          = path.join(__dirname, 'templates', 'routes.template.hbs');
 const swaggerSpecPath                     = path.join(__dirname, 'templates', 'swaggerSpec.template.hbs');
+const ProcFilePath                     = path.join(__dirname, 'templates', 'Procfile.template.hbs');
 
 
 // clear the terminal
@@ -82,7 +83,10 @@ try {
     generateCommonFile('.gitignore', {}, gitignorePath);
 
     // create travis yml
-    generateCommonFile('.travis.yml', {}, travisPath);
+    generateCommonFile('.travis.yml', { name: projectConfig.name }, travisPath);
+
+    // create Procfile for heroku
+    generateCommonFile('Procfile', { entryFile: 'server.js' }, ProcFilePath);
 
     // create README
     const readmeObj = {
