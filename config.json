@@ -1,8 +1,28 @@
 {
-  "proxyConfig": {
-    "target": "https://appapi-shop-dev1.mysaledev.com",
-    "baseResourcePath": "",
-    "nonProxyPath": "/mobile"
+  "projectConfig": {
+    "name": "shop-client-api",
+    "version": "1.0.0",
+    "description": "test description",
+    "author": "Jorge Interno",
+    "entryFile": "index.js"
+  },
+  "environment": {
+    "target": {
+      "envName": "APP_API_URL",
+      "value": "https://appapi-shop-dev1.mysaledev.com"
+    },
+    "baseResourcePath": {
+      "envName": "BASE_RESOURCE_PATH",
+      "value": "/"
+    },
+    "nonProxyPath": {
+      "envName": "NON_PROXY_PATH",
+      "value": "/mobile"
+    },
+    "port": {
+      "envName": "PORT",
+      "value": 8080
+    }
   },
   "routes": [
     {
@@ -10,7 +30,7 @@
       "method": "post",
       "name": "getProductsBySearchQueryModelProxy",
       "routeUrl": "/v1/accounts/:accountId/products/",
-      "implPath": "./impl",
+      "implPath": "impl",
       "filename": "getProductsBySearchQueryModelProxy.js",
       "swaggerConfig": {
         "method": "post",
@@ -43,7 +63,7 @@
       "method": "post",
       "name": "getProductsBySearchQueryModelNonProxy",
       "routeUrl": "/v1/accounts/:accountId/products/",
-      "implPath": "./impl",
+      "implPath": "impl",
       "filename": "getProductsBySearchQueryModelNonProxy.js",
       "swaggerConfig": {
         "method": "post",
