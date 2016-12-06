@@ -6,7 +6,7 @@ module.exports.setup = function(server, proxy) {
 
   /**
    * @swagger
-   * {{ routeUrl }}:
+   * {{ environment.nonProxyPath.value }}{{ routeUrl }}:
    *   {{ method }}:
    *   description: {{ swaggerConfig.description }}
    *   produces:
@@ -20,7 +20,7 @@ module.exports.setup = function(server, proxy) {
    *   {{#each swaggerConfig.responses}}    {{ status }}: {{ description }}
    *   {{/each}}
    */
-  server.{{ method }}('{{ nonProxyPath }}{{ routeUrl }}', (req, res, next) => {
+  server.{{ method }}('{{ environment.nonProxyPath.value }}{{ routeUrl }}', (req, res, next) => {
     assert(false, 'Implement this');
     return next();
   });
