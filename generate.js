@@ -13,7 +13,14 @@ const inquirer                            = require('inquirer');
 const Spinner                             = CLI.Spinner;
 const touch                               = require('touch');
 const { projectQuestions }                = require('./prompt');
-const { hbs, getCurrDirBase, dirExists }  = require('./lib');
+const {
+        hbs,
+        getCurrDirBase,
+        dirExists,
+        generateCommonFile,
+        generateCommonFileWithDir,
+        generateRouteFile
+      }                                   = require('./lib');
 
 // template paths
 const routeProxyPath                      = path.join(__dirname, 'templates', 'route.proxy.template.hbs');
@@ -27,13 +34,13 @@ const testPath                            = path.join(__dirname, 'templates', 't
 const serverPath                          = path.join(__dirname, 'templates', 'server.template.hbs');
 const routesPath                          = path.join(__dirname, 'templates', 'routes.template.hbs');
 const swaggerSpecPath                     = path.join(__dirname, 'templates', 'swaggerSpec.template.hbs');
-const ProcFilePath                     = path.join(__dirname, 'templates', 'Procfile.template.hbs');
+const ProcFilePath                        = path.join(__dirname, 'templates', 'Procfile.template.hbs');
 
 
 // clear the terminal
 clear();
 console.log(
-  chalk.yellow(
+  chalk.blue(
     figlet.textSync('CODE-GEN', { horizontalLayout: 'full' })
   )
 );
@@ -131,6 +138,8 @@ try {
       // Generate swaggerSpec file
       generateCommonFile('swaggerSpec.js', { name: projectConfig.name, version: projectConfig.version, routes: routesArr }, swaggerSpecPath);
 
+      console.log("Project generation done.")
+
     } else {
       throw("No routes specified.")
     }
@@ -141,78 +150,4 @@ try {
 } catch(e) {
   console.error("ERROR");
   console.error(e);
-}
-
-
-function generateCommonFile(filePath, configObj, templatePath) {
-  const source = readHBS(templatePath);
-  const output = renderToString(source, configObj);
-  if (output !== undefined && output && output !== '') {
-    //write to file
-    try {
-      console.log('Creating ' + filePath + ' file...');
-      fs.writeFileSync(filePath, output);
-      console.log("File: " + filePath + " generated successfully!");
-    } catch(e) {
-      console.log("Error encountered while creating " + filePath)
-      console.error(e);
-    }
-  } else {
-    throw('Handlebars produced nothing...');
-  }
-}
-
-function generateCommonFileWithDir(dirPath, filePath, configObj, templatePath) {
-  //create directory if not existing
-  if (!dirExists(dirPath)) {
-    console.log("Creating directory " + dirPath + " ...");
-    fs.mkdirSync(dirPath);
-  }
-
-  generateCommonFile(path.join(dirPath, filePath), configObj, templatePath);
-}
-
-function generateRouteFile(route, routeTemplatePath) {
-  const source = readHBS(routeTemplatePath);
-  const output = renderToString(source, route);
-
-  if (output !== undefined && output && output !== '' && route.implPath !== undefined && route.implPath) {
-
-    //create directory if not existing
-    if (!dirExists(route.implPath)) {
-      console.log("Creating directory " + route.implPath + " ...");
-      fs.mkdirSync(route.implPath);
-    }
-
-    //write to file
-    try {
-      fs.writeFileSync(path.join(route.implPath, route.filename), output);
-    } catch(e) {
-      console.error(e);
-    }
-
-    console.log("File: " + path.join(route.implPath, route.filename) + " generated successfully!");
-
-  } else {
-    throw('Handlebar produced nothing or implPath and filename is not specified...')
-  }
-}
-
-function readHBS(path) {
-
-  try {
-    const data = fs.readFileSync(path);
-    return data.toString();
-  } catch(e) {
-    console.error("ERROR");
-    console.error(e);
-  }
-}
-
-
-// this will be called after the file is read
-function renderToString(source, data) {
-  var template = handlebars.compile(source);
-  var outputString = template(data);
-  return outputString;
 }
