@@ -1,0 +1,95 @@
+{
+  "projectConfig": {
+    "name": "shop-client-api",
+    "version": "1.0.0",
+    "description": "test description",
+    "author": "Jorge Interno",
+    "entryFile": "index.js"
+  },
+  "environment": {
+    "target": {
+      "envName": "APP_API_URL",
+      "value": "https://appapi-shop-dev1.mysaledev.com"
+    },
+    "baseResourcePath": {
+      "envName": "BASE_RESOURCE_PATH",
+      "value": "/"
+    },
+    "nonProxyPath": {
+      "envName": "NON_PROXY_PATH",
+      "value": "/mobile"
+    },
+    "port": {
+      "envName": "PORT",
+      "value": 8080
+    }
+  },
+  "routes": [
+    {
+      "isProxy": true,
+      "method": "post",
+      "name": "getProductsBySearchQueryModelProxy",
+      "routeUrl": "/v1/accounts/:accountId/products/",
+      "implPath": "impl",
+      "filename": "getProductsBySearchQueryModelProxy.js",
+      "swaggerConfig": {
+        "method": "post",
+        "description": "Proxy endpoint for querying products by search model",
+        "produces": "application/json",
+        "parameters": [
+          { "name": "query",
+            "props": [ {"description": "query string"}, {"required": true}, {"type": "string"}]
+          },
+          { "name": "pageNumber",
+            "props": [ {"description": "number of page to fetch"}, {"required": true}, {"type": "number"}]
+          },
+          { "name": "pageSize",
+            "props": [ {"description": "number of products per page"}, {"required": true}, {"type": "number"}]
+          },
+          { "name": "facetFilters",
+            "props": [ {"description": "facets"}, {"required": true}, {"type": "array"}]
+          },
+          { "name": "categories",
+            "props": [ {"description": "product categories"}, {"required": true}, {"type": "array"}]
+          }
+        ],
+        "responses": [
+          { "status": 200, "description": "OK" }
+        ]
+      }
+    },
+    {
+      "isProxy": false,
+      "method": "post",
+      "name": "getProductsBySearchQueryModelNonProxy",
+      "routeUrl": "/v1/accounts/:accountId/products/",
+      "implPath": "impl",
+      "filename": "getProductsBySearchQueryModelNonProxy.js",
+      "swaggerConfig": {
+        "method": "post",
+        "description": "Custom endpoint for querying products by search model",
+        "produces": "application/json",
+        "parameters": [
+          { "name": "query",
+            "props": [ {"description": "query string"}, {"required": true}, {"type": "string"}]
+          },
+          { "name": "pageNumber",
+            "props": [ {"description": "number of page to fetch"}, {"required": true}, {"type": "number"}]
+          },
+          { "name": "pageSize",
+            "props": [ {"description": "number of products per page"}, {"required": true}, {"type": "number"}]
+          },
+          { "name": "facetFilters",
+            "props": [ {"description": "facets"}, {"required": true}, {"type": "array"}]
+          },
+          { "name": "categories",
+            "props": [ {"description": "product categories"}, {"required": true}, {"type": "array"}]
+          }
+        ],
+        "responses": [
+          { "status": 200, "description": "OK" }
+        ]
+      }
+    }
+  ]
+}
