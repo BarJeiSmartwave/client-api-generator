@@ -1,1 +1,4 @@
-# client-api-generator
+# Client API Generator
+---
+
+> Command Line Node Module for project/code generation

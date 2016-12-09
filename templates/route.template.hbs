@@ -1,0 +1,29 @@
+'use strict';
+
+const {{ name }}Impl = require('../{{implDirName}}/{{name}}Impl');
+
+module.exports.setup = function(server, proxy) {
+
+  /**
+   * @swagger
+   * {{ environment.nonProxyPath.value }}{{ routeUrl }}:
+   *  {{ method }}:
+   *   description: {{ swaggerConfig.description }}
+   *   produces:
+   *    - {{ swaggerConfig.produces }}
+   *   parameters:
+   *   {{#each swaggerConfig.parameters}} - name: {{ name }}
+   *   {{#each props}}{{#pairs .}}   {{key}}: {{value}}{{/pairs}}
+   *   {{/each}}
+   *   {{/each}}
+   *   responses:
+   *   {{#each swaggerConfig.responses}}    {{ status }}: {{ description }}
+   *   {{/each}}
+   */
+  server.{{ method }}('{{ environment.nonProxyPath.value }}{{ routeUrl }}', (req, res, next) => {
+
+    {{ name }}Impl.execute(req, res, next);
+
+  });
+
+}

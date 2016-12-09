@@ -1,0 +1,16 @@
+'use strict';
+
+{{#each routes}}
+const {{ name }} = require('{{ path }}');
+{{/each}}
+
+const routes = {
+  init: function(server, proxy) {
+    {{#each routes}}
+    {{ name }}.setup(server, proxy);
+    {{/each}}
+  }
+}
+
+
+module.exports = routes;
