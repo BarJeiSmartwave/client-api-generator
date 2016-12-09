@@ -1,6 +1,6 @@
 'use strict';
 
-const assert = require('assert');
+const {{ name }}Impl = require('../{{implDirName}}/{{name}}Impl');
 
 module.exports.setup = function(server, proxy) {
 
@@ -21,8 +21,9 @@ module.exports.setup = function(server, proxy) {
    *   {{/each}}
    */
   server.{{ method }}('{{ environment.nonProxyPath.value }}{{ routeUrl }}', (req, res, next) => {
-    assert(false, 'Implement this');
-    return next();
+
+    {{ name }}Impl.execute(req, res, next);
+
   });
 
 }

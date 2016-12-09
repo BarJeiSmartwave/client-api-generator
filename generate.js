@@ -19,12 +19,14 @@ const {
         dirExists,
         generateCommonFile,
         generateCommonFileWithDir,
-        generateRouteFile
+        generateRouteFile,
+        cliArgumentHandler
       }                                   = require('./lib');
 
 // template paths
 const routeProxyPath                      = path.join(__dirname, 'templates', 'route.proxy.template.hbs');
 const routePath                           = path.join(__dirname, 'templates', 'route.template.hbs');
+const routeImplPath                       = path.join(__dirname, 'templates', 'routeImpl.template.hbs');
 const packageJSONPath                     = path.join(__dirname, 'templates', 'package.json.template.hbs');
 const envFilePath                         = path.join(__dirname, 'templates', 'env.template.hbs');
 const gitignorePath                       = path.join(__dirname, 'templates', 'gitignore.template.hbs');
@@ -48,9 +50,11 @@ console.log(
 // get the terminal args
 const argv = require('minimist')(process.argv.slice(2));
 
+const consoleArguments = cliArgumentHandler.parseArguments();
+
 console.log("Current directory: " + getCurrDirBase());
 
-const configFilePath = argv._[0] || 'config.json';
+const configFilePath = consoleArguments.config || 'config.json';
 
 // setup libs
 hbs.setup(handlebars);
@@ -63,11 +67,14 @@ try {
   const config = JSON.parse(data);
   const projectConfig = config.projectConfig
   const environment = config.environment;
-  const routes = config.routes;
+  const routesConfig = config.routesConfig;
+  const routesDirName = routesConfig.dirName;
+  const routesImplDirName = routesConfig.implDirName;
+  const routes = routesConfig.routes;
 
   // ask for project configuration
   // will get default values from config.json you provided
-  inquirer.prompt(projectQuestions.get(projectConfig, argv)).then((answers) => {
+  inquirer.prompt(projectQuestions.get(projectConfig, consoleArguments, routesConfig)).then((answers) => {
 
     // Get the values from answers obj
     // and generate package.json file
@@ -81,6 +88,7 @@ try {
 
     const projectDirName = answers.name;
 
+    // create package.json
     generateCommonFile('package.json', packageJSONObj, packageJSONPath);
 
     // create .env
@@ -110,35 +118,58 @@ try {
 
     // Generate route files
     console.log("Generating route files...");
+    const routesDirName = answers.routesDirName;
+    const routesImplDirName = answers.routesImplDirName;
+
+    //create routes directory if not existing
+    if (!dirExists(routesDirName)) {
+      console.log("Creating directory " + routesDirName + " ...");
+      fs.mkdirSync(routesDirName);
+    }
+
+    //create route implementations directory if not existing
+    if (!dirExists(routesImplDirName)) {
+      console.log("Creating directory " + routesImplDirName + " ...");
+      fs.mkdirSync(routesImplDirName);
+    }
+
     if (routes instanceof Array && routes.length > 0) {
 
       routes.forEach((route) => {
 
         if (route.isProxy !== undefined && route.isProxy) {
-          generateRouteFile(route, routeProxyPath);
+          generateRouteFile(route.isProxy, routesDirName, routesImplDirName, route, routeProxyPath);
         } else {
           // set the nonProxyPath so that we can prepend later
+          // pass the template path for implementation
           route.environment = environment;
-          generateRouteFile(route, routePath);
+          route.implDirName = routesImplDirName;
+          generateRouteFile(route.isProxy, routesDirName, routesImplDirName, route, routePath, routeImplPath);
         }
 
       });
 
       console.log("Finished generating route files...");
 
-      // Generate routes.js
-      const routesArr = routes.map((r) => {
-        return {
-          name: r.name,
-          path: './' + path.join(r.implPath, r.filename)
-        };
-      });
-      generateCommonFile('routes.js', { routes: routesArr }, routesPath);
+      try {
+        // Generate routes.js
+        const routesArr = routes.map((r) => {
+          return {
+            name: r.name,
+            path: './' + path.join(routesDirName, r.name)
+          };
+        });
+        generateCommonFile('routes.js', { routes: routesArr }, routesPath);
 
-      // Generate swaggerSpec file
-      generateCommonFile('swaggerSpec.js', { name: projectConfig.name, version: projectConfig.version, routes: routesArr }, swaggerSpecPath);
+        // Generate swaggerSpec file
+        generateCommonFile('swaggerSpec.js', { name: projectConfig.name, version: projectConfig.version, routes: routesArr }, swaggerSpecPath);
 
-      console.log("Project generation done.")
+        console.log("Project generation done.")
+      } catch(e) {
+        console.log("ERROR");
+        console.log(e);
+      }
+
 
     } else {
       throw("No routes specified.")

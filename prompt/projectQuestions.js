@@ -1,13 +1,13 @@
 'use strict';
 
 module.exports = {
-  get: (projectConfig, argv) => {
+  get: (projectConfig, consoleArguments, routesConfig) => {
     return [
       {
         type: 'input',
         name: 'name',
         message: 'Enter a name for the project:',
-        default: argv._[0] || projectConfig.name,
+        default: consoleArguments.name || projectConfig.name,
         validate: function( value ) {
           if (value.length) {
             return true;
@@ -61,6 +61,32 @@ module.exports = {
           }
         }
       },
+      {
+        type: 'input',
+        name: 'routesDirName',
+        message: 'Enter directory name for routes: ',
+        default: routesConfig.dirName || "routes",
+        validate: function( value ) {
+          if (value.length) {
+            return true;
+          } else {
+            return 'Please enter name for routes directory';
+          }
+        }
+      },
+      {
+        type: 'input',
+        name: 'routesImplDirName',
+        message: 'Enter directory name for route implmentations: ',
+        default: routesConfig.implDirName || "routes",
+        validate: function( value ) {
+          if (value.length) {
+            return true;
+          } else {
+            return 'Please enter name for route implementations';
+          }
+        }
+      }
     ];
   }
 }
